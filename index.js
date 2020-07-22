@@ -6,7 +6,7 @@ const app = express()
 app.use(cors())
 app.use(bodyParser.json())
 const port = process.env.PORT || 4000;
-app.get('/', (req, res) => res.send('Hello World!'))
+app.get('/', (req, res) => res.send('<h1>Hello World!</h1> ' + JSON.stringify(dummyDb)))
 const dummyDb = { subscription: null } //dummy in memory store
 const saveToDatabase = async subscription => {
   // Since this is a demo app, I am going to save this in a dummy in memory store. Do not do this in your apps.
@@ -21,8 +21,8 @@ app.post('/save-subscription', async (req, res) => {
 })
 const vapidKeys = {
   publicKey:
-    'BLQwrArVlC-SaMogMgFojKuzG3rzMpkM9zGHmXzuvIs8tdu3s9K_eLY-rVsxDjmFSQ90JVuVLV2uQaQ1KZZNWBI',
-  privateKey: 'vGHn0lZoUKspaPJRwiBYNZ3T24yCI50jE18NnEGtGYA',
+    'BOTPzboE4C_uWvQyJfZb2wmGiZ353PfPPmiaht_krkseJMAoAOxnH-2ohIyC1om_bgUoNgNyqK6Q6ICk1KmgnI8',
+  privateKey: 'JoYZJO-0akJLwdWB6-D1sbJ5rzbejsCWQ6bXEHRgdhA',
 }
 //setting our previously generated VAPID keys
 webpush.setVapidDetails(
@@ -30,6 +30,7 @@ webpush.setVapidDetails(
   vapidKeys.publicKey,
   vapidKeys.privateKey
 )
+
 //function to send the notification to the subscribed device
 const sendNotification = (subscription, dataToSend) => {
   webpush.sendNotification(subscription, dataToSend)
