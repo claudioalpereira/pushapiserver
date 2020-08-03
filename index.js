@@ -8,8 +8,12 @@ app.use(bodyParser.json())
 const port = process.env.PORT || 4000;
 const dummyDb = { subscription: null } //dummy in memory store
 
-const { PgClient } = require('pg');
-
+const pgOptions = {
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
+};
 
 const saveToDatabase = async subscription => {
   // Since this is a demo app, I am going to save this in a dummy in memory store. Do not do this in your apps.
@@ -21,19 +25,16 @@ app.get('/', (req, res) => res.send('<h1>Hello World!</h1> ' + JSON.stringify(du
 
 app.get('/sub', async (req, res) => {
 
-const db = new PgClient({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false
-  }
-});
-
+	const { Client } = require('pg');
+	const db = new Client(pgOptions);
 	db.connect();
+
 	db.query('SELECT table_schema,table_name FROM information_schema.tables;', (err, res) => {
 		if (err) throw err;
 		console.log(JSON.stringify(res.rows));
 		db.end();
 	});
+	
 });
 
 
