@@ -21,20 +21,25 @@ const saveToDatabase = async subscription => {
   //dummyDb.subscription = subscription
 }
 
-app.get('/', (req, res) => res.send('<h1>Hello World!</h1> ' + JSON.stringify(dummyDb)))
-
-app.get('/sub', async (req, res) => {
-
+const query(qu) {
 	const { Client } = require('pg');
 	const db = new Client(pgOptions);
 	db.connect();
 
-	db.query('SELECT * FROM subscriptions;', (err, res) => {
-		if (err) throw err;
-		console.log(JSON.stringify(res.rows));
+	db.query(qu, (err, qres) => {
+		if (err)
+			throw err;
+		res.body = JSON.stringify(qres.rows);
+		console.log(JSON.stringify(qres.rows));
 		db.end();
 	});
-	
+}
+
+app.get('/', (req, res) => res.send('<h1>Hello World!</h1> ' + JSON.stringify(dummyDb)))
+
+app.get('/sub', async (req, res) => {
+	var r = query('select * from subscriptions');
+	res.body = JSON.stringify(r.rows);
 });
 
 
