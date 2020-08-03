@@ -11,12 +11,6 @@ const dummyDb = { subscription: null } //dummy in memory store
 
 const { PgClient } = require('pg');
 
-const db = new PgClient({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false
-  }
-});
 
 const saveToDatabase = async subscription => {
   // Since this is a demo app, I am going to save this in a dummy in memory store. Do not do this in your apps.
@@ -25,6 +19,14 @@ const saveToDatabase = async subscription => {
 }
 
 app.get('/sub', async (req, res) => {
+
+const db = new PgClient({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
+});
+
 	db.connect();
 	db.query('SELECT * FROM clients;', (err, res) => {
 		if (err) throw err;
