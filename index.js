@@ -6,7 +6,6 @@ const app = express()
 app.use(cors())
 app.use(bodyParser.json())
 const port = process.env.PORT || 4000;
-app.get('/', (req, res) => res.send('<h1>Hello World!</h1> ' + JSON.stringify(dummyDb)))
 const dummyDb = { subscription: null } //dummy in memory store
 
 const { PgClient } = require('pg');
@@ -18,6 +17,8 @@ const saveToDatabase = async subscription => {
   //dummyDb.subscription = subscription
 }
 
+app.get('/', (req, res) => res.send('<h1>Hello World!</h1> ' + JSON.stringify(dummyDb)))
+
 app.get('/sub', async (req, res) => {
 
 const db = new PgClient({
@@ -28,7 +29,7 @@ const db = new PgClient({
 });
 
 	db.connect();
-	db.query('SELECT * FROM clients;', (err, res) => {
+	db.query('SELECT table_schema,table_name FROM information_schema.tables;', (err, res) => {
 		if (err) throw err;
 		console.log(JSON.stringify(res.rows));
 		db.end();
