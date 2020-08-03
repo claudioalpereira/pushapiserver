@@ -29,7 +29,7 @@ app.get('/sub', async (req, res) => {
 	const db = new Client(pgOptions);
 	db.connect();
 
-	db.query('SELECT table_schema,table_name FROM information_schema.tables;', (err, res) => {
+	db.query('SELECT * FROM subscriptions;', (err, res) => {
 		if (err) throw err;
 		console.log(JSON.stringify(res.rows));
 		db.end();
