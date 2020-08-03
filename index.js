@@ -8,17 +8,39 @@ app.use(bodyParser.json())
 const port = process.env.PORT || 4000;
 app.get('/', (req, res) => res.send('<h1>Hello World!</h1> ' + JSON.stringify(dummyDb)))
 const dummyDb = { subscription: null } //dummy in memory store
+
+const { PgClient } = require('pg');
+
+const db = new PgClient({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
+});
+
 const saveToDatabase = async subscription => {
   // Since this is a demo app, I am going to save this in a dummy in memory store. Do not do this in your apps.
   // Here you should be writing your db logic to save it.
-  dummyDb.subscription = subscription
+  //dummyDb.subscription = subscription
 }
+
+app.get('/sub', async (req, res) => {
+	db.connect();
+	db.query('SELECT * FROM clients;', (err, res) => {
+		if (err) throw err;
+		console.log(JSON.stringify(res.rows));
+		db.end();
+	});
+});
+
+
 // The new /save-subscription endpoint
 app.post('/save-subscription', async (req, res) => {
   const subscription = req.body
   await saveToDatabase(subscription) //Method to save the subscription to Database
   res.json({ message: 'success' })
 })
+
 const vapidKeys = {
   publicKey:
     'BOTPzboE4C_uWvQyJfZb2wmGiZ353PfPPmiaht_krkseJMAoAOxnH-2ohIyC1om_bgUoNgNyqK6Q6ICk1KmgnI8',
@@ -42,4 +64,5 @@ app.get('/send-notification', (req, res) => {
   sendNotification(subscription, message)
   res.json({ message: 'message sent' })
 })
+
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
