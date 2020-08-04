@@ -98,25 +98,30 @@ const sendNotification = (subscription, dataToSend) => {
 //route to test send notification
 app.get('/notify', (req, res) => {
 
-	const subs = await Subscription.findAll();
-	subs.forEach(s=>webpush.sendNotification(s, req.body));
+	try{
+		const subs = await Subscription.findAll();
+		subs.forEach(s=>webpush.sendNotification(s, req.body));
+	} catch(error) {
+		console.error(error);
+	}
 
 
 //  const subscription = dummyDb.subscription //get subscription from your databse here.
 //  const message = 'Hello World'
 //  sendNotification(subscription, message)
-  res.json({ message: 'message sent' })
+  res.json({ message: 'message sent' });
 })
 app.get('/notify/:subId', (req, res) => {
 
-	const subs = await Subscription.findAll({where: { id: subId }});
-	subs.forEach(s=>webpush.sendNotification(s, req.body));
+	try{
+		const subs = await Subscription.findAll({where: { id: subId }});
+		subs.forEach(s=>webpush.sendNotification(s, req.body));
+		res.json({ message: 'message sent' })
+	} catch(error) {
+		console.error(error);
+		res.json({ erro: error })
+	}
 
-
-//  const subscription = dummyDb.subscription //get subscription from your databse here.
-//  const message = 'Hello World'
-//  sendNotification(subscription, message)
-  res.json({ message: 'message sent' })
 })
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
