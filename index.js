@@ -8,12 +8,15 @@ app.use(bodyParser.json())
 const port = process.env.PORT || 4000;
 const dummyDb = { subscription: null } //dummy in memory store
 
+
 const pgOptions = {
   connectionString: process.env.DATABASE_URL,
   ssl: {
     rejectUnauthorized: false
   }
 };
+const { Pool } = require('pg');
+const pool = new Pool(pgOptions);
 
 const saveToDatabase = async subscription => {
   // Since this is a demo app, I am going to save this in a dummy in memory store. Do not do this in your apps.
@@ -48,7 +51,18 @@ return res;
 app.get('/', (req, res) => res.send('<h1>Hello World!</h1> ' + JSON.stringify(dummyDb)))
 
 app.get('/sub', async (req, res) => {
-	query('select * from subscriptions', (r)=>{ res.body = JSON.stringify(r.rows) });	
+	//query('select * from subscriptions', (r)=>{ res.body = JSON.stringify(r.rows) });	
+	pool
+  .query('select * from subscriptions', [1])
+  .then(r => {
+	  res.body = JSON.stringify(r.rows);
+	  console.log('subscriptions:', r.rows);
+  })
+  .catch(err =>
+    setImmediate(() => {
+      throw err
+    })
+  )
 });
 
 
