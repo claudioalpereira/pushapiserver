@@ -96,7 +96,7 @@ const sendNotification = (subscription, dataToSend) => {
   webpush.sendNotification(subscription, dataToSend)
 }
 //route to test send notification
-app.get('/notify', (req, res) => {
+app.get('/notify', async (req, res) => {
 
 	try{
 		const subs = await Subscription.findAll();
@@ -111,7 +111,7 @@ app.get('/notify', (req, res) => {
 //  sendNotification(subscription, message)
   res.json({ message: 'message sent' });
 })
-app.get('/notify/:subId', (req, res) => {
+app.get('/notify/:subId', async (req, res) => {
 
 	try{
 		const subs = await Subscription.findAll({where: { id: subId }});
