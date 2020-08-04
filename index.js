@@ -7,7 +7,7 @@ var corsOptions = {
   origin: 'https://claudioalpereira.github.io',
   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 }
-app.use(cors(corsOptions))
+app.use(cors)
 app.use(bodyParser.json())
 const port = process.env.PORT || 4000;
 const dummyDb = { subscription: null } //dummy in memory store
@@ -44,7 +44,7 @@ const Subscription = sequelize.define('subscription', {
 // Note: using `force: true` will drop the table if it already exists
 Subscription.sync({ force: true }); // Now the `users` table in the database corresponds to the model definition
 
-app.post('/subscribe', cors(corsOptions), async (req, res) => {
+app.post('/subscribe', async (req, res) => {
 	try {
 		const newSub = new Subscription({raw:req.body});
 		await newSub.save();
