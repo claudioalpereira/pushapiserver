@@ -21,8 +21,16 @@ const saveToDatabase = async subscription => {
   //dummyDb.subscription = subscription
 }
 
+
 const query = async (qu) => {
-	const { Client } = require('pg');
+
+	const { Client } = require('pg')
+	const client = new Client()
+	await client.connect()
+	const res = await client.query(qu)
+	await client.end()
+return res;
+/*	const { Client } = require('pg');
 	const db = new Client(pgOptions);
 	db.connect();
 
@@ -33,6 +41,7 @@ const query = async (qu) => {
 		console.log(JSON.stringify(qres.rows));
 		db.end();
 	});
+*/
 }
 
 app.get('/', (req, res) => res.send('<h1>Hello World!</h1> ' + JSON.stringify(dummyDb)))
