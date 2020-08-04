@@ -30,7 +30,7 @@ const Subscription = sequelize.define('subscription', {
 		//allowNull: false
 	},
 	raw: {
-		type: Sequelize.STRING
+		type: Sequelize.STRING(2048)
 	}
 }, {
 	// options
