@@ -53,7 +53,7 @@ app.get('/', (req, res) => res.send('<h1>Hello World!</h1> ' + JSON.stringify(du
 app.get('/sub', async (req, res) => {
 	//query('select * from subscriptions', (r)=>{ res.body = JSON.stringify(r.rows) });	
 	pool
-  .query('select * from subscriptions', [1])
+  .query('select * from subscriptions')
   .then(r => {
 	  res.body = JSON.stringify(r.rows);
 	  console.log('subscriptions:', r.rows);
