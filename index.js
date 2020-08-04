@@ -23,19 +23,6 @@ sequelize.authenticate()
 .catch(err => {
 	console.error('Unable to connect to the database:', err);
 });
-const User = sequelize.define('user', {
-	// attributes
-	firstName: {
-		type: Sequelize.STRING,
-		allowNull: false
-	},
-	lastName: {
-		type: Sequelize.STRING
-		// allowNull defaults to true
-	}
-}, {
-	// options
-});
 const Subscription = sequelize.define('subscription', {
 	// attributes
 	user: {
@@ -50,36 +37,36 @@ const Subscription = sequelize.define('subscription', {
 });
 
 // Note: using `force: true` will drop the table if it already exists
-User.sync({ force: true }); // Now the `users` table in the database corresponds to the model definition
+Subscription.sync({ force: true }); // Now the `users` table in the database corresponds to the model definition
 
-app.post('/user', async (req, res) => {
+app.post('/subscribe', async (req, res) => {
 	try {
-		const newUser = new User(req.body)
-		await newUser.save()
-		res.json({ user: newUser }) // Returns the new user that is created in the database
+		const newSub = new Subscription({raw:req.body});
+		await newSub.save();
+		res.json({ subscription: newSub }) // Returns the new user that is created in the database
 	} catch(error) {
 		console.error(error)
 	}
-})
+});
 
-app.get('/user', async (req, res) => {
+app.get('/subscription', async (req, res) => {
 	try {
-		const user = await User.findAll()
-		res.json({ user })
-	} catch(error) {
-		console.error(error)
-	}
-})
-
-app.get('/user/:userId', async (req, res) => {
-	const userId = req.params.userId;
-	try {
-		const user = await User.findAll({where: { id: userId }});
-		res.json({ user });
+		const sub = await Subscription.findAll();
+		res.json({ sub });
 	} catch(error) {
 		console.error(error);
 	}
-})
+});
+
+app.get('/subscription/:subId', async (req, res) => {
+	const subId = req.params.subId;
+	try {
+		const sub = await Subscription.findAll({where: { id: subId }});
+		res.json({ sub });
+	} catch(error) {
+		console.error(error);
+	}
+});
 
 const saveToDatabase = async subscription => {
   // Since this is a demo app, I am going to save this in a dummy in memory store. Do not do this in your apps.
@@ -109,10 +96,26 @@ const sendNotification = (subscription, dataToSend) => {
   webpush.sendNotification(subscription, dataToSend)
 }
 //route to test send notification
-app.get('/send-notification', (req, res) => {
-  const subscription = dummyDb.subscription //get subscription from your databse here.
-  const message = 'Hello World'
-  sendNotification(subscription, message)
+app.get('/notify', (req, res) => {
+
+	const subs = await Subscription.findAll();
+	subs.forEach(s=>webpush.sendNotification(s, req.body));
+
+
+//  const subscription = dummyDb.subscription //get subscription from your databse here.
+//  const message = 'Hello World'
+//  sendNotification(subscription, message)
+  res.json({ message: 'message sent' })
+})
+app.get('/notify/:subId', (req, res) => {
+
+	const subs = await Subscription.findAll({where: { id: subId }});
+	subs.forEach(s=>webpush.sendNotification(s, req.body));
+
+
+//  const subscription = dummyDb.subscription //get subscription from your databse here.
+//  const message = 'Hello World'
+//  sendNotification(subscription, message)
   res.json({ message: 'message sent' })
 })
 
