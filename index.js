@@ -15,6 +15,7 @@ const pgOptions = {
     rejectUnauthorized: false
   }
 };
+console.log(process.env.DATABASE_URL);
 //const { Pool } = require('pg');
 //const pool = new Pool(pgOptions);
 const Sequelize = require('sequelize')
@@ -22,58 +23,55 @@ const sequelize = new Sequelize('postgres://user:pass@example.com:5432/dbname')
 sequelize
 .authenticate()
 .then(() => {
-console.log('Connection has been established successfully.');
+	console.log('Connection has been established successfully.');
 })
 .catch(err => {
-console.error('Unable to connect to the database:', err);
+	console.error('Unable to connect to the database:', err);
 });
 const User = sequelize.define('user', {
-// attributes
-firstName: {
-type: Sequelize.STRING,
-allowNull: false
-},
-lastName: {
-type: Sequelize.STRING
-// allowNull defaults to true
-}
+	// attributes
+	firstName: {
+		type: Sequelize.STRING,
+		allowNull: false
+	},
+	lastName: {
+		type: Sequelize.STRING
+		// allowNull defaults to true
+	}
 }, {
-// options
+	// options
 });
+
 // Note: using `force: true` will drop the table if it already exists
-User.sync({ force: true }) // Now the `users` table in the database corresponds to the model definition
+User.sync({ force: true }); // Now the `users` table in the database corresponds to the model definition
+
 app.post('/user', async (req, res) => {
-try {
-const newUser = new User(req.body)
-await newUser.save()
-res.json({ user: newUser }) // Returns the new user that is created in the database
-} catch(error) {
-console.error(error)
-}
+	try {
+		const newUser = new User(req.body)
+		await newUser.save()
+		res.json({ user: newUser }) // Returns the new user that is created in the database
+	} catch(error) {
+		console.error(error)
+	}
 })
+
 app.get('/user', async (req, res) => {
-const userId = req.params.userId
-try {
-const user = await User.findAll()
-res.json({ user })
-} catch(error) {
-console.error(error)
-}
+	try {
+		const user = await User.findAll()
+		res.json({ user })
+	} catch(error) {
+		console.error(error)
+	}
 })
 
 app.get('/user/:userId', async (req, res) => {
-const userId = req.params.userId
-try {
-const user = await User.findAll({
-where: {
-id: userId
-}
-}
-)
-res.json({ user })
-} catch(error) {
-console.error(error)
-}
+	const userId = req.params.userId;
+	try {
+		const user = await User.findAll({where: { id: userId }});
+		res.json({ user });
+	} catch(error) {
+		console.error(error);
+	}
 })
 
 const saveToDatabase = async subscription => {
