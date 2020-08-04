@@ -3,10 +3,15 @@ const cors = require('cors')
 const bodyParser = require('body-parser')
 const webpush = require('web-push')
 const app = express()
-app.use(cors())
+var corsOptions = {
+  origin: 'https://claudioalpereira.github.io',
+  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+}
+app.use(cors(corsOptions))
 app.use(bodyParser.json())
 const port = process.env.PORT || 4000;
 const dummyDb = { subscription: null } //dummy in memory store
+
 
 webpush.setVapidDetails(
   'mailto:myuserid@email.com',
