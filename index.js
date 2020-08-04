@@ -44,7 +44,7 @@ const Subscription = sequelize.define('subscription', {
 // Note: using `force: true` will drop the table if it already exists
 Subscription.sync({ force: true }); // Now the `users` table in the database corresponds to the model definition
 
-app.post('/subscribe', async (req, res) => {
+app.post('/subscribe', cors(corsOptions), async (req, res) => {
 	try {
 		const newSub = new Subscription({raw:req.body});
 		await newSub.save();
