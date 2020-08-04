@@ -25,7 +25,7 @@ const saveToDatabase = async subscription => {
 const query = async (qu) => {
 
 	const { Client } = require('pg')
-	const client = new Client()
+	const client = new Client(pgOptions)
 	await client.connect()
 	const res = await client.query(qu)
 	await client.end()
