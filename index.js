@@ -55,7 +55,7 @@ app.get('/sub', async (req, res) => {
 	pool
   .query('select * from subscriptions')
   .then(r => {
-	  res.body = JSON.stringify(r.rows);
+	  res.json = r.rows;
 	  console.log('subscriptions:', r.rows);
   })
   .catch(err =>
